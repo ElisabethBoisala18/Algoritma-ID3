@@ -27,8 +27,10 @@ Algoritma ID3 atau Iterative Dichotomiser 3 adalah sebuah metode yang digunakan 
 #### Struktur Pohon Keputusan
 Struktur pohon keputusan terdiri dari root node (node akar), internal node (node cabang), dan leaf node.
 Pembentukan pohon klasifikasi dengan algoritma ID3 melalui dua langkah, yaitu :
-	1. menghitung nilai entropy 
-	2. menghitung nilai information gain dari setiap variabel
+
+1. Menghitung nilai entropy 
+
+2. Menghitung nilai information gain dari setiap variabel
 
 # Tahapan Algoritma ID3
 Tahapan Algoritma ID3 dibagi menjadi 6 tahapan, yaitu :
@@ -40,22 +42,24 @@ Dataset yang digunakan yaitu dataset yang berlabel nominal. Untuk algoritma ID3 
 Konsep Entropy digunakan untuk mengukur “seberapa informatifnya” sebuah node (yang biasanya disebut seberapa baiknya).
 
 Rumus Entropy :
-
-
+\begin{equation}
+\operatorname{entropy}(s)=-p_{+} \log _2 p_{+}-p_{-} \log _2 p_{-}
+\end{equation}
 Keterangan :
 
 S    = Himpunan (dataset) Kasus
 
-𝑝_(+)= jumlah label yang bersolusi positif (mendukung) dibagi total kasus. 
+𝑝_+ = jumlah label yang bersolusi positif (mendukung) dibagi total kasus. 
 
-𝑝_(−)= jumlah label yang bersolusi negative (tidak mendukung) dibagi total kasus.
+𝑝_− = jumlah label yang bersolusi negative (tidak mendukung) dibagi total kasus.
 	
 #### Menghitung Nilai Information Gain
 Information gain adalah kriteria pemisahan yang menggunakan pengukuran entropy. Information gain digunakan untuk mengukur efektivitas suatu atribut dalam mengklasifikasikan data. 
 
 Rumus Information Gain :
-
-
+\begin{equation}
+\operatorname{Gain}(A)=\operatorname{entropy}(s)-\sum_{i=1}^k \frac{|S i|}{|S|} x \operatorname{entropy}(S i)
+\end{equation}
 Keterangan :
 
 S = Ruang data (sampel)
@@ -90,7 +94,7 @@ pada eksperimen ini menggunakan data Penguin yang bersumber dari Kaggle
 ```{r}
 library(readxl)
 Data_penguin <- read_excel("Data penguin.xlsx")
-Data_penguin
+View(Data_penguin)
 ```
 
 #### Menghitung Nilai Entropy
@@ -161,7 +165,15 @@ library(rpart.plot)
 tree<- rpart(Species~., data = Data_penguin, method = 'class') 
 rpart.plot(tree)
 ```
+
 # Referensi
+
 1. https://rpubs.com/gluc/ID3
+
 2. https://rpubs.com/Eliyanto29/Entropy_and_Information_G
+
 3. https://medium.com/analytics-vidhya/visualizing-decision-tree-with-r-774f58ac23c
+
+4. http://repository.unmuhjember.ac.id/8330/9/9.%20Jurnal.pdf
+
+5. 
