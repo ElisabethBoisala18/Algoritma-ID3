@@ -1,0 +1,167 @@
+---
+title: Algoritma ID3 Dengan RStudio
+author: Dona Dellila Doja Se-Institut Teknologi Statistika dan Bisnis Muhammadiyah
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+bibliography: references.bib
+---
+
+```{=html}
+<style>
+body{
+text-align: justify}
+</style>
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Algoritma ID3
+
+#### Pengertian
+Algoritma ID3 atau Iterative Dichotomiser 3 adalah sebuah metode yang digunakan untuk membuat pohon keputusan yang telah dikembangkan oleh J. Ross Quinlan sejak tahun 1986. Algoritma ID3 melakukan pencarian secara menyeluruh pada semua kemungkinan pohon keputusan. Algoritma ID3 berusaha membangun decision tree (pohon keputusan) secara top-down (dari atas ke bawah).
+
+#### Struktur Pohon Keputusan
+Struktur pohon keputusan terdiri dari root node (node akar), internal node (node cabang), dan leaf node.
+Pembentukan pohon klasifikasi dengan algoritma ID3 melalui dua langkah, yaitu :
+	1. menghitung nilai entropy 
+	2. menghitung nilai information gain dari setiap variabel
+
+# Tahapan Algoritma ID3
+Tahapan Algoritma ID3 dibagi menjadi 6 tahapan, yaitu :
+
+#### Menyiapkan Dataset
+Dataset yang digunakan yaitu dataset yang berlabel nominal. Untuk algoritma ID3 menggunakan data jenis klasifikasi.   
+
+#### Menghitung Nilai Entropy
+Konsep Entropy digunakan untuk mengukur “seberapa informatifnya” sebuah node (yang biasanya disebut seberapa baiknya).
+
+Rumus Entropy :
+
+
+Keterangan :
+
+S    = Himpunan (dataset) Kasus
+
+𝑝_(+)= jumlah label yang bersolusi positif (mendukung) dibagi total kasus. 
+
+𝑝_(−)= jumlah label yang bersolusi negative (tidak mendukung) dibagi total kasus.
+	
+#### Menghitung Nilai Information Gain
+Information gain adalah kriteria pemisahan yang menggunakan pengukuran entropy. Information gain digunakan untuk mengukur efektivitas suatu atribut dalam mengklasifikasikan data. 
+
+Rumus Information Gain :
+
+
+Keterangan :
+
+S = Ruang data (sampel)
+
+A = Atribut 
+
+⎸𝑆𝑖⎹ = jumlah sampel data
+
+⎸𝑆⎹ = jumlah seluruh sampel data
+
+Entropy (Si) = untuk sampel-sampel yang memiliki nilai i
+
+#### Menentukan Root Node (Node Akar)
+Root node atau node akar ditentukan berdasarkan nilai information gain yang telah di cari. Atribut dengan nilai information gain tertinggi akan menjadi root node nya. Atribut yang telah di pilih tidak diikutkan lagi ke perhitungan entropy dan information gain selanjutnya. 
+
+#### Membuat Node Cabang
+Node cabang di dapat dari perhitungan entropy dan information gain selanjutnya.
+
+#### Ulangi Langkah 2-4
+Mengulangi langkah 2-4 hingga membentuk pohon keputusan.
+
+# Eksperimen Algoritma ID3
+Berikut ini merupakan eksperimen menggunakan Algoritma ID3
+
+#### Library
+```{r eval=FALSE}
+library(dplyr)
+```
+
+#### Loading Dataset
+pada eksperimen ini menggunakan data Penguin yang bersumber dari Kaggle
+```{r}
+library(readxl)
+Data_penguin <- read_excel("Data penguin.xlsx")
+Data_penguin
+```
+
+#### Menghitung Nilai Entropy
+Nilai entropy dapat dihitung dengan cara berikut
+```{r}
+IsPure <- function(data) {
+  length(unique(data[,ncol(data)])) == 1
+}
+Entropy <- function( vls ) {
+  res <- vls/sum(vls) * log2(vls/sum(vls))
+  res[vls == 0] <- 0
+  -sum(res)
+}
+```
+Menghitung nilai entropy untuk kolom Culmen.Length
+```{r}
+print(Entropy(Data_penguin$Culmen.Length))
+```
+Menghitung nilai entropy untuk kolom Culmen.Depth
+```{r}
+print(Entropy(Data_penguin$Culmen.Depth))
+```
+Menghitung nilai entropy untuk kolom Flipper.Length
+```{r}
+print(Entropy(Data_penguin$Flipper.Length))
+```
+Menghitung nilai entropy untuk kolom Body.Mass
+```{r}
+print(Entropy(Data_penguin$Body.Mass))
+```
+#### Nilai Information Gain
+Menghitung nilai information gain dapat dilakukan dengan cara berikut :
+```{r}
+InformationGain <- function( tble ) {
+  tble <- as.data.frame.matrix(tble)
+  entropyBefore <- Entropy(colSums(tble))
+  s <- rowSums(tble)
+  entropyAfter <- sum (s / sum(s) * apply(tble, MARGIN = 1, FUN = Entropy ))
+  informationGain <- entropyBefore - entropyAfter
+  return (informationGain)
+}
+```
+Menghitung nilai informtion gain untuk kolom Culmen.Length
+```{r}
+InformationGain(table(Data_penguin[,c('Culmen.Length', 'Species')]))
+```
+Menghitung nilai informtion gain untuk kolom Culmen.Depth
+```{r}
+InformationGain(table(Data_penguin[,c('Culmen.Depth', 'Species')]))
+```
+Menghitung nilai informtion gain untuk kolom Flipper.Length
+```{r}
+InformationGain(table(Data_penguin[,c('Flipper.Length', 'Species')]))
+```
+Menghitung nilai informtion gain untuk kolom Body.Mass
+```{r}
+InformationGain(table(Data_penguin[,c('Body.Mass', 'Species')]))
+```
+Menghitung nilai informtion gain untuk kolom Species
+```{r}
+InformationGain(table(Data_penguin[,c('Species', 'Species')]))
+```
+#### Membuat Pohon Keputusan
+Pohon keputusan dapat dibuat dengan cara berikut
+```{r}
+library(rpart) 
+library(rpart.plot) 
+tree<- rpart(Species~., data = Data_penguin, method = 'class') 
+rpart.plot(tree)
+```
+# Referensi
+1. https://rpubs.com/gluc/ID3
+2. https://rpubs.com/Eliyanto29/Entropy_and_Information_G
+3. https://medium.com/analytics-vidhya/visualizing-decision-tree-with-r-774f58ac23c
